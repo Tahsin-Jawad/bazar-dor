@@ -1,69 +1,125 @@
-import Image from "next/image";
+"use client";
+
+import React, { useEffect, useState } from "react";
+import ProductCard from "@/components/ProductCard";
+
+interface Product {
+  id: string | number;
+  name: string;
+  price: number;
+  unit: string;
+  emoji?: string;
+  change?: number;
+}
 
 export default function Home() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    fetch("https://api.api-store.workers.dev/api/bazardor/products")
+      .then((res) => res.json())
+      .then((data) => {
+        const items = Array.isArray(data) ? data : data.products || [];
+        setProducts(items);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching products:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  // Fallback data if API returns empty
+  const fallbackProducts: Product[] = [
+    { id: 1, name: "মিনিকেট চাল", price: 70, unit: "কেজি", emoji: "🍚", change: 2.1 },
+    { id: 2, name: "পেঁয়াজ", price: 115, unit: "কেজি", emoji: "🧅", change: 3.4 },
+    { id: 3, name: "আলু", price: 30, unit: "কেজি", emoji: "🥔", change: -1.5 },
+    { id: 4, name: "ব্রয়লার মুরগি", price: 180, unit: "কেজি", emoji: "🍗", change: -0.8 },
+    { id: 5, name: "ডিম", price: 150, unit: "ডজন", emoji: "🥚", change: 1.2 },
+    { id: 6, name: "রুই মাছ", price: 350, unit: "কেজি", emoji: "🐟", change: 4.0 },
+    { id: 7, name: "কাঁচা মরিচ", price: 120, unit: "কেজি", emoji: "🌶️", change: -2.5 },
+    { id: 8, name: "মসুর ডাল", price: 130, unit: "কেজি", emoji: "🫘", change: 0.5 },
+  ];
+
+  const displayProducts = products.length > 0 ? products : fallbackProducts;
+
+  // Top 6 risers and fallers
+  const risers = [...displayProducts].sort((a, b) => (b.change || 0) - (a.change || 0)).slice(0, 6);
+  const fallers = [...displayProducts].sort((a, b) => (a.change || 0) - (b.change || 0)).slice(0, 6);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
+      {/* Hero / Banner Section */}
+      <section className="bg-success/10 rounded-2xl p-6 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
+        <div className="space-y-4 max-w-xl">
+          <span className="text-xs font-bold uppercase tracking-wider bg-success text-white px-3 py-1 rounded-full">
+            আজকের বাজার
+          </span>
+          <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
+            আজকের বাজারের দাম এক নজরে
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-gray-600 text-sm md:text-base">
+            চাল, ডাল, তেল, সবজি, মাছ, মাংস, ডিম ও মসলার দাম — বাজারভিত্তিক বিস্তারিত, গড়, সর্বনিম্ন-সর্বোচ্চ এবং দামের পরিবর্তন এক জায়গায়।
           </p>
+          <div>
+            <a
+              href="#sob-ponyo"
+              className="inline-block bg-success hover:bg-success-focus text-white font-medium px-6 py-3 rounded-xl transition-all shadow-sm"
+            >
+              সব পণ্য দেখুন
+            </a>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <div className="text-7xl md:text-9xl bg-white p-6 rounded-2xl shadow-sm">
+          🛒
         </div>
-      </main>
+      </section>
+
+      {/* Loading Skeletons */}
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="h-40 bg-gray-200 rounded-xl animate-pulse"></div>
+          ))}
+        </div>
+      ) : (
+        <>
+          {/* Section A: আজ দাম বেড়েছে ▲ */}
+          <section className="space-y-4">
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <span className="text-success">▲</span> আজ দাম বেড়েছে
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {risers.map((item) => (
+                <ProductCard key={item.id} {...item} />
+              ))}
+            </div>
+          </section>
+
+          {/* Section B: আজ দাম কমেছে ▼ */}
+          <section className="space-y-4">
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <span className="text-error">▼</span> আজ দাম কমেছে
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {fallers.map((item) => (
+                <ProductCard key={item.id} {...item} />
+              ))}
+            </div>
+          </section>
+
+          {/* Section C: সব পণ্য */}
+          <section id="sob-ponyo" className="space-y-4 pt-6">
+            <h2 className="text-2xl font-bold text-gray-900">সব পণ্য</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {displayProducts.map((item) => (
+                <ProductCard key={item.id} {...item} />
+              ))}
+            </div>
+          </section>
+        </>
+      )}
     </div>
   );
 }
