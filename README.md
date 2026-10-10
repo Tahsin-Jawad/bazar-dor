@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+🛒 BazarDor (বাজার দর)
 
-## Getting Started
+A modern, responsive, and full-stack web application designed to help consumers track daily commodity market prices, explore category-wise price rates, monitor real-time market updates, and securely manage user accounts.
 
-First, run the development server:
+🚀 Live Demo
 
-```bash
+🌐 Live Application: https://bazar-dor-eta.vercel.app
+
+📋 Table of Contents
+
+About The Project
+
+Technologies Used
+
+Key Features
+
+Project Architecture & Structure
+
+Getting Started & Local Setup
+
+Environment Variables
+
+License
+
+📌 About The Project
+
+BazarDor was created to simplify daily grocery shopping in Bangladesh by bringing transparency to essential commodity prices. It empowers users with up-to-date market rates, category-based filtering, price fluctuations, and a seamless user experience. Built with a modern full-stack architecture, it includes complete user authentication and personal account management.
+
+🛠️ Technologies Used
+
+This project is engineered using a robust and modern tech stack:
+
+Framework: Next.js (App Router, Server & Client Components)
+
+Language: TypeScript, React
+
+Styling & UI: Tailwind CSS, DaisyUI
+
+Authentication: BetterAuth (Email/Password, Google & GitHub OAuth)
+
+Database & ORM: MongoDB & Mongoose
+
+Deployment & Hosting: Vercel
+
+✨ Key Features
+
+Dynamic Market Prices & Category Filtering: Effortlessly browse and filter current market rates for various essential categories such as Rice, Lentils, Oil, Vegetables, Fish, Meat, and more.
+
+Secure Authentication System: Complete authentication workflow using BetterAuth, featuring email/password sign-in alongside seamless Google and GitHub OAuth integrations.
+
+Real-time Price Ticker: An interactive price ticker on the homepage showcasing real-time market trends, fluctuations, and percentage changes for daily commodities.
+
+User Profile Management: Dedicated user profile page with navigation to a separate update route (/profile/update), allowing users to update their profile information using authClient.updateUser.
+
+Responsive & Modern UI/UX: Fully responsive layout tailored for smartphones, tablets, and desktop displays with smooth interactions.
+
+📂 Project Structure
+
+bazar-dor/
+├── app/                  # Next.js App Router (Pages & API routes)
+│   ├── profile/          # User Profile & Update routes
+│   │   └── update/       # Profile Update form route
+│   ├── api/              # Backend API endpoints (Auth & Market Data)
+│   └── layout.tsx        # Root layout with context providers
+├── components/           # Reusable UI components (Navbar, Ticker, Cards)
+├── lib/                  # Utility functions & BetterAuth client configuration
+├── models/               # Database schemas & models
+├── public/               # Static assets & graphics
+└── package.json          # Project metadata & dependencies
+
+
+⚙️ Getting Started & Local Setup
+
+To run this application locally on your system, follow these steps:
+
+1. Clone the Repository
+
+git clone https://github.com/your-username/bazar-dor.git
+cd bazar-dor
+
+
+2. Install Dependencies
+
+npm install
+
+
+3. Configure Environment Variables
+
+Create a .env.local file in the root directory and add the necessary environment variables:
+
+BETTER_AUTH_SECRET=your_better_auth_secret_here
+BETTER_AUTH_URL=http://localhost:3000
+MONGODB_URI=your_mongodb_connection_string_here
+
+
+4. Run Development Server
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Open your browser and navigate to http://localhost:3000.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+📄 License
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is created for educational and assignment evaluation purposes.
