@@ -1,58 +1,65 @@
 "use client";
 
-import Link from "next/link";
 import React from "react";
+import Link from "next/link";
 
 interface ProductCardProps {
-  id: string | number;
-  name: string;
-  price: number;
-  unit: string;
+  id?: string | number;
+  name?: string;
+  price?: number | string;
+  unit?: string;
   emoji?: string;
-  change?: number;
+  change?: number | string;
 }
 
-export default function ProductCard({ id, name, price, unit, emoji, change = 0 }: ProductCardProps) {
-  const isUp = change > 0;
-  const isDown = change < 0;
-
-  // Convert English numbers to Bengali digits if needed
-  const toBengaliNumber = (num: number) => {
-    const bengaliDigits = ["০", "১", "২", "৩", "৪", "৫", "৬", "৭", "৮", "৯"];
-    return num.toString().replace(/\d/g, (d) => bengaliDigits[parseInt(d)]);
-  };
+export default function ProductCard({
+  id = 1,
+  name = "পণ্য",
+  price = 0,
+  unit = "কেজি",
+  emoji = "🛒",
+  change = 0,
+}: ProductCardProps) {
+  const numericChange = Number(change) || 0;
+  const isUp = numericChange > 0;
+  const isDown = numericChange < 0;
 
   return (
     <Link
       href={`/product/${id}`}
-      className="bg-white border border-base-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+      className="bg-white border border-gray-100 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between gap-4 group"
     >
-      <div className="flex items-start gap-3">
-        <span className="text-3xl p-2 bg-base-100 rounded-lg">{emoji || "🛒"}</span>
-        <div>
-          <h3 className="font-semibold text-gray-800 text-base">{name}</h3>
-          <p className="text-xs text-gray-500 mt-0.5">প্রতি {unit}</p>
+      <div className="flex items-start justify-between">
+        <div className="flex items-center gap-3">
+          <span className="text-3xl p-2 bg-gray-50 rounded-xl group-hover:scale-105 transition-transform">
+            {emoji}
+          </span>
+          <div>
+            <h3 className="font-bold text-gray-800 text-base group-hover:text-success transition-colors">
+              {name}
+            </h3>
+            <p className="text-xs text-gray-400">প্রতি {unit}</p>
+          </div>
         </div>
       </div>
 
-      <div className="mt-4 pt-3 border-t border-base-100 flex justify-between items-end">
+      <div className="flex items-end justify-between pt-2 border-t border-gray-50">
         <div>
-          <span className="text-xs text-gray-500 block">আজকের দাম</span>
-          <span className="text-lg font-bold text-gray-900">
-            {toBengaliNumber(price)} টাকা
+          <span className="text-xs text-gray-400 block">আজকের দাম</span>
+          <span className="text-xl font-extrabold text-gray-900">
+            {price} <span className="text-xs font-normal text-gray-500">টাকা</span>
           </span>
         </div>
         <span
           className={`text-xs font-semibold px-2 py-1 rounded-md flex items-center gap-1 ${
             isUp
-              ? "bg-success/10 text-success"
+              ? "text-success bg-success/10"
               : isDown
-              ? "bg-error/10 text-error"
-              : "bg-gray-100 text-gray-600"
+              ? "text-error bg-error/10"
+              : "text-gray-500 bg-gray-100"
           }`}
         >
-          {isUp ? "▲ " : isDown ? "▼ " : "—"}
-          {toBengaliNumber(Math.abs(change))}%
+          {isUp ? "▲" : isDown ? "▼" : "—"} {Math.abs(numericChange)}%
         </span>
       </div>
     </Link>

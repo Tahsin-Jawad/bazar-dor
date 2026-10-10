@@ -1,61 +1,35 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-
-interface Product {
-  id?: string | number;
-  name: string;
-  price: number;
-  unit: string;
-  emoji?: string;
-  change?: number;
-}
+import React from "react";
 
 export default function PriceTicker() {
-  const defaultItems: Product[] = [
+  const items = [
     { name: "মিনিকেট চাল", price: 70, unit: "কেজি", emoji: "🍚", change: 2.1 },
     { name: "আলু", price: 30, unit: "কেজি", emoji: "🥔", change: -1.5 },
     { name: "পেঁয়াজ", price: 115, unit: "কেজি", emoji: "🧅", change: 3.4 },
     { name: "ব্রয়লার মুরগি", price: 180, unit: "কেজি", emoji: "🍗", change: -0.8 },
     { name: "ডিম", price: 150, unit: "ডজন", emoji: "🥚", change: 1.2 },
+    { name: "রুই মাছ", price: 350, unit: "কেজি", emoji: "🐟", change: 4.0 },
   ];
 
-  const [products, setProducts] = useState<Product[]>(defaultItems);
-
-  useEffect(() => {
-    fetch("https://api.api-store.workers.dev/api/bazardor/products")
-      .then((res) => {
-        if (!res.ok) throw new Error("Network response was not ok");
-        return res.json();
-      })
-      .then((data) => {
-        const items = Array.isArray(data) ? data : data.products || [];
-        if (items.length > 0) {
-          setProducts(items);
-        }
-      })
-      .catch((err) => {
-        console.warn("Using fallback ticker data due to fetch error:", err);
-      });
-  }, []);
-
   return (
-    <div className="bg-base-200 border-b border-base-300 overflow-hidden py-2 text-sm">
+    <div className="bg-white border-b border-gray-200 overflow-hidden py-2.5 text-sm shadow-xs">
       <div className="flex animate-ticker whitespace-nowrap">
-        {[...products, ...products].map((item, index) => {
-          const changeVal = item.change || 0;
-          const isUp = changeVal > 0;
-          const isDown = changeVal < 0;
+        {[...items, ...items].map((item, index) => {
+          const isUp = item.change > 0;
+          const isDown = item.change < 0;
           
           return (
-            <div key={index} className="flex items-center mx-6 gap-2">
-              <span>{item.emoji || "🛒"}</span>
-              <span className="font-medium">{item.name}</span>
-              <span className="text-gray-600">·</span>
-              <span>{item.price} টাকা/{item.unit}</span>
-              <span className={`flex items-center text-xs font-semibold ${isUp ? 'text-success' : isDown ? 'text-error' : 'text-gray-500'}`}>
+            <div key={index} className="flex items-center mx-6 gap-2 text-gray-800 font-medium">
+              <span>{item.emoji}</span>
+              <span>{item.name}</span>
+              <span className="text-gray-400">·</span>
+              <span className="font-bold text-gray-900">{item.price} টাকা/{item.unit}</span>
+              <span className={`flex items-center text-xs font-semibold px-1.5 py-0.5 rounded ${
+                isUp ? 'text-green-600 bg-green-50' : isDown ? 'text-red-600 bg-red-50' : 'text-gray-600 bg-gray-100'
+              }`}>
                 {isUp ? '▲ ' : isDown ? '▼ ' : '—'} 
-                {Math.abs(changeVal)}%
+                {Math.abs(item.change)}%
               </span>
             </div>
           );

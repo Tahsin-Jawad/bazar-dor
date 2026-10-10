@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
@@ -18,57 +18,64 @@ interface ProductDetail {
   avgPrice?: number;
 }
 
-export default function ProductDetailPage() {
+const mockProducts: Record<string, ProductDetail> = {
+  "1": { id: 1, name: "পেঁয়াজ", price: 115, unit: "কেজি", emoji: "🧅", change: 3.4, minPrice: 110, maxPrice: 125, avgPrice: 115 },
+  "2": { id: 2, name: "আদা", price: 245, unit: "কেজি", emoji: "🫚", change: 2.0, minPrice: 230, maxPrice: 260, avgPrice: 245 },
+  "3": { id: 3, name: "বেগুন", price: 65, unit: "কেজি", emoji: "🍆", change: -1.5, minPrice: 60, maxPrice: 75, avgPrice: 65 },
+  "4": { id: 4, name: "রুই মাছ", price: 380, unit: "কেজি", emoji: "🐟", change: 4.0, minPrice: 350, maxPrice: 420, avgPrice: 380 },
+  "5": { id: 5, name: "ডিম", price: 148, unit: "ডজন", emoji: "🥚", change: -0.5, minPrice: 145, maxPrice: 155, avgPrice: 148 },
+  "6": { id: 6, name: "মাখন (১০০ গ্রাম)", price: 145, unit: "পিস", emoji: "🧈", change: 1.2, minPrice: 140, maxPrice: 150, avgPrice: 145 },
+  "7": { id: 7, name: "কাঁচা মরিচ", price: 120, unit: "কেজি", emoji: "🌶️", change: -2.5, minPrice: 110, maxPrice: 135, avgPrice: 120 },
+  "8": { id: 8, name: "রসুন", price: 225, unit: "কেজি", emoji: "🧄", change: 1.8, minPrice: 210, maxPrice: 240, avgPrice: 225 },
+  "9": { id: 9, name: "আলু", price: 30, unit: "কেজি", emoji: "🥔", change: -1.0, minPrice: 28, maxPrice: 35, avgPrice: 30 },
+};
+
+function ProductDetailContent() {
   const params = useParams();
-  const id = params?.id;
+  const id = params?.id as string;
 
   const [product, setProduct] = useState<ProductDetail | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (!id) return;
-    fetch(`https://api.api-store.workers.dev/api/bazardor/products/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setProduct(data.product || data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching product details:", err);
-        // Fallback dummy detail if fetch fails
-        setProduct({
-          id,
-          name: "মিনিকেট চাল",
-          price: 70,
-          unit: "কেজি",
-          emoji: "🍚",
-          change: 2.1,
-          markets: [
-            { marketName: "কারওয়ান বাজার", price: 68 },
-            { marketName: "নিউ মার্কেট", price: 70 },
-            { marketName: "মোহাম্মদপুর টাউন হল", price: 72 },
-          ],
-          minPrice: 68,
-          maxPrice: 72,
-          avgPrice: 70,
-        });
-        setLoading(false);
+    
+    const found = mockProducts[id];
+    if (found) {
+      setProduct(found);
+    } else {
+      setProduct({
+        id,
+        name: "মিনিকেট চাল",
+        price: 70,
+        unit: "কেজি",
+        emoji: "🍚",
+        change: 2.1,
+        minPrice: 68,
+        maxPrice: 72,
+        avgPrice: 70,
       });
-  }, [id]);
+    }
 
-  if (loading) {
-    return (
-      <div className="max-w-4xl mx-auto px-4 py-12 space-y-6">
-        <div className="h-10 w-3/4 bg-gray-200 rounded animate-pulse"></div>
-        <div className="h-64 bg-gray-200 rounded-2xl animate-pulse"></div>
-      </div>
-    );
-  }
+    async function fetchDetail() {
+      try {
+        const res = await fetch(`https://api.api-store.workers.dev/api/bazardor/products/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && (data.product || data.name)) {
+            setProduct(data.product || data);
+          }
+        }
+      } catch (err) {
+        console.info("Using offline product detail fallback.");
+      }
+    }
+    fetchDetail();
+  }, [id]);
 
   if (!product) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16 text-center space-y-4">
-        <h2 className="text-2xl font-bold text-gray-800">পণ্যটি পাওয়া যায়নি</h2>
+        <h2 className="text-2xl font-bold text-gray-800">পণ্যটি পাওয়া যায়নি</h2>
         <Link href="/" className="btn btn-success text-white">হোম পেজে ফিরে যান</Link>
       </div>
     );
@@ -76,12 +83,10 @@ export default function ProductDetailPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
-      {/* Back Button */}
       <Link href="/" className="text-sm font-medium text-success hover:underline flex items-center gap-1">
         ← হোম পেজে ফিরে যান
       </Link>
 
-      {/* Main Product Overview Card */}
       <div className="bg-white border border-base-200 rounded-2xl p-6 md:p-8 shadow-sm flex flex-col md:flex-row items-center gap-6">
         <span className="text-7xl p-4 bg-base-100 rounded-2xl">{product.emoji || "🛒"}</span>
         <div className="space-y-2 flex-grow text-center md:text-left">
@@ -99,14 +104,13 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Price Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white p-5 rounded-xl border border-base-200 shadow-sm text-center">
           <span className="text-xs text-gray-500 block">সর্বনিম্ন দাম</span>
           <span className="text-xl font-bold text-gray-800">{product.minPrice || product.price - 5} টাকা</span>
         </div>
         <div className="bg-white p-5 rounded-xl border border-base-200 shadow-sm text-center">
-          <span className="text-xs text-gray-500 block">গড় দাম</span>
+          <span className="text-xs text-gray-500 block">গড় দাম</span>
           <span className="text-xl font-bold text-success">{product.avgPrice || product.price} টাকা</span>
         </div>
         <div className="bg-white p-5 rounded-xl border border-base-200 shadow-sm text-center">
@@ -115,9 +119,8 @@ export default function ProductDetailPage() {
         </div>
       </div>
 
-      {/* Market Breakdown Table */}
       <div className="bg-white rounded-2xl border border-base-200 shadow-sm overflow-hidden p-6 space-y-4">
-        বাজারভিত্তিক দামের তালিকা
+        <h3 className="font-bold text-gray-800 text-lg">বাজারভিত্তিক দামের তালিকা</h3>
         <div className="overflow-x-auto">
           <table className="table w-full">
             <thead>
@@ -137,7 +140,7 @@ export default function ProductDetailPage() {
               ) : (
                 <>
                   <tr>
-                    <td className="font-medium text-gray-800">কারওয়ান বাজার</td>
+                    <td className="font-medium text-gray-800">কারওয়ান বাজার</td>
                     <td className="font-bold text-success">{product.price - 2} টাকা</td>
                   </tr>
                   <tr>
@@ -155,5 +158,13 @@ export default function ProductDetailPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProductDetailPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-12">লোড হচ্ছে...</div>}>
+      <ProductDetailContent />
+    </Suspense>
   );
 }
