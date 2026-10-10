@@ -46,8 +46,8 @@ export default function Navbar() {
     { emoji: "🥚", name: "ডিম", price: "১৫০", unit: "ডজন", change: "▲ ১.২%", isUp: true },
   ];
 
-const userImage = session?.user?.image || `https://api.dicebear.com/7.x/adventurer/svg?seed=${session?.user?.email}`;
-const userName = session?.user?.name || "ব্যবহারকারী";
+const userImage = session?.user?.image || `https://api.dicebear.com/7.x/adventurer/svg?seed=${session?.user?.email || 'user'}`;
+const userName = session?.user?.name || session?.user?.email?.split('@')[0] || "ব্যবহারকারী";
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-xs text-gray-900">
